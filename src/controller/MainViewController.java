@@ -8,6 +8,12 @@ import entities.Server;
 public class MainViewController {
     private static Server actualSelectedServer;
 
+    static {
+        actualSelectedServer = new Server("Oracle", "192.168.1.111", 1521, "SYS as sysdba");
+        actualSelectedServer.setService("XE");
+        actualSelectedServer.setPass("root");
+    }
+
     public static Server actualServer() {
         return actualSelectedServer;
     }

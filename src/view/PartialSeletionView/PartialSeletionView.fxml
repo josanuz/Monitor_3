@@ -57,20 +57,22 @@
                     </HBox.margin>
                 </HBox>
                 <Pane maxWidth="+Infinity" HBox.hgrow="ALWAYS"/>
-                <Button fx:id="cancelButton" cancelButton="true" minWidth="80.0" mnemonicParsing="false" text="Cancel"
-                        HBox.hgrow="NEVER">
+                <Button fx:id="cancelButton" cancelButton="true" minWidth="80.0" mnemonicParsing="false"
+                        onAction="#Cancel" text="Cancel" HBox.hgrow="NEVER">
                     <HBox.margin>
                         <Insets/>
                     </HBox.margin>
                 </Button>
                 <HBox fx:id="okParent" alignment="CENTER">
                     <children>
-                        <Button fx:id="PSV_BTN_back" minWidth="80.0" mnemonicParsing="false" text="Atras">
+                        <Button fx:id="PSV_BTN_back" minWidth="80.0" mnemonicParsing="false" onAction="#Back"
+                                text="Atras">
                             <HBox.margin>
                                 <Insets left="14.0"/>
                             </HBox.margin>
                         </Button>
-                        <Button fx:id="okButton" minWidth="80.0" mnemonicParsing="false" text="Ok" HBox.hgrow="NEVER">
+                        <Button fx:id="okButton" minWidth="80.0" mnemonicParsing="false" onAction="#OK" text="Ok"
+                                HBox.hgrow="NEVER">
                             <HBox.margin>
                                 <Insets left="14.0"/>
                             </HBox.margin>

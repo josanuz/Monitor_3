@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
 
 import java.net.URL;
 import java.sql.Connection;
@@ -29,14 +30,17 @@ public class PSV_Controller implements Initializable, ControlledScreen {
     CheckBox PSV_CHK_InitFile;
     @FXML
     CheckBox PSV_CHK_ArchivedLogs;
-    private Server s;
+    private Server s = MainViewController.actualServer();
 
+    PSV_Controller() {
+    }
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        Server s = MainViewController.actualServer();
+        s = MainViewController.actualServer();
         try {
             List<TableSpace> tableSpaceList = tableSpaces();
-            PSV_LV_TableSpaces.getItems().addAll(tableSpaceList);
+            PSV_LV_TableSpaces.getItems().setAll(tableSpaceList);
+            PSV_LV_TableSpaces.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -44,12 +48,14 @@ public class PSV_Controller implements Initializable, ControlledScreen {
 
     @FXML
     void OK() {
+        tvController.getTableSpaceList().clear();
         tvController.getTableSpaceList().addAll(PSV_LV_TableSpaces.getSelectionModel().getSelectedItems());
         boolean options[] = new boolean[3];
         options[0] = PSV_CHK_ControlFiles.isSelected();
         options[1] = PSV_CHK_InitFile.isSelected();
         options[2] = PSV_CHK_ArchivedLogs.isSelected();
         tvController.setOptions(options);
+        tvController.nextScreen();
     }
 
     @FXML
@@ -77,6 +83,7 @@ public class PSV_Controller implements Initializable, ControlledScreen {
 
     @Override
     public void close() {
+        tvController.close();
     }
 
     private List<TableSpace> tableSpaces() throws SQLException {

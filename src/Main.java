@@ -1,6 +1,5 @@
 import accessobjects.TaskDAO;
 import connection.derby.DerbyConnection;
-import controller.NewTaskDialogController;
 import entities.tasks.CompleteTask;
 import entities.tasks.Task;
 import javafx.application.Application;
@@ -33,8 +32,8 @@ public class Main extends Application {
                 e1.printStackTrace();
             }
         });
-        NewTaskDialogController nt = new NewTaskDialogController();
-        nt.Show();
+        // NewTaskDialogController nt = new NewTaskDialogController();
+        // nt.Show();
     }
 
     public static void main(String[] args) {

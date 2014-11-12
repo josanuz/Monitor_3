@@ -1,5 +1,6 @@
 package controller;
 
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 
 import java.net.URL;
@@ -9,8 +10,10 @@ import java.util.ResourceBundle;
  * Created by Casa on 11/11/2014.
  */
 public class CNT_Controller implements Initializable, ControlledScreen {
+    NewTaskDialogController tvController;
     @Override
     public void setScreenParent(NewTaskDialogController screenPage) {
+        tvController = screenPage;
     }
 
     @Override
@@ -27,6 +30,16 @@ public class CNT_Controller implements Initializable, ControlledScreen {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+    }
+
+    @FXML
+    void OK() {
+        tvController.createTask();
+    }
+
+    @FXML
+    void Cancel() {
+        tvController.close();
     }
     /**Added Comment**/
 }

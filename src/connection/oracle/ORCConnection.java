@@ -31,7 +31,7 @@ public class ORCConnection {
      */
     public static ORCConnection Instance(Server s) {
         if (serversConnection.get(s.getServerName()) == null)
-            serversConnection.put(s.getServerName(), new ORCConnection());
+            serversConnection.put(s.getServerName(), new ORCConnection(s));
         return serversConnection.get(s.getServerName());
     }
 

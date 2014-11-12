@@ -2,8 +2,9 @@ package controller; /**
  * Created by Jose on 13/09/2014.
  */
 
+import entities.Server;
 import entities.TableSpace;
-import entities.tasks.Task;
+import entities.tasks.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -29,6 +30,9 @@ public class NewTaskDialogController implements Initializable, ControlledScreen 
     private boolean isPartial;
     private boolean isIncremental;
     private boolean isLogic;
+    private Server server;
+    private Parent parentContainer;
+    //CF,Init,Archive
     private boolean options[] = new boolean[3];
     int Level;
     int scheduleType;
@@ -40,7 +44,7 @@ public class NewTaskDialogController implements Initializable, ControlledScreen 
     private HashMap<String, String> RegisteredScreens = new HashMap<>();
     private HashMap<String, ControlledScreen> controllers = new HashMap<>();
 
-    public NewTaskDialogController() {
+    public NewTaskDialogController(Parent p, Server S) {
         content = new AnchorPane();
         RegisteredScreens.put("ConfirmNewTask", "/view/ConfirmNewTask/ConfirmNewTask.fxml");
         RegisteredScreens.put("NewTask", "/view/NewTaskView/AlertDialog_css.fxml");
@@ -348,6 +352,49 @@ public class NewTaskDialogController implements Initializable, ControlledScreen 
 
     public void setOptions(boolean[] options) {
         this.options = options;
+    }
+
+    public NewTaskDialogController getParentController() {
+        return parentController;
+    }
+
+    public void setParentController(NewTaskDialogController parentController) {
+        this.parentController = parentController;
+    }
+
+    public Parent getParentContainer() {
+        return parentContainer;
+    }
+
+    public void setParentContainer(Parent parentContainer) {
+        this.parentContainer = parentContainer;
+    }
+
+    public Server getServer() {
+        return server;
+    }
+
+    public void setServer(Server server) {
+        this.server = server;
+    }
+
+    public void createTask() {
+        if (isTotal)
+            this.newTask = new CompleteTask(this.scheduleType, this.startDate);
+        if (isPartial) {
+            newTask = new PartialTask(this.scheduleType, this.startDate);
+            ((PartialTask) newTask).getAffectedTablespaces().addAll(this.getTableSpaceList());
+            ((PartialTask) newTask).setIncludeControlFiles(options[0]);
+            ((PartialTask) newTask).setIncludeInitFile(options[1]);
+            ((PartialTask) newTask).setIncludeArchiveLogs(options[2]);
+        }
+        if (isIncremental) {
+            newTask = new IncrementalTask(this.scheduleType, this.startDate, this.Level);
+        }
+        if (isLogic) {
+            newTask = new LogicalTask(this.scheduleType, this.startDate);
+        }
+        server.getServerTasks().add(newTask);
     }
     /**Addedd coommet**/
 }

@@ -2,20 +2,21 @@ package entities;
 
 import entities.tasks.Task;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-
-import java.util.ArrayList;
-import java.util.List;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public class Server {
-    private StringProperty serverName;
-    private StringProperty ip;
-    private IntegerProperty port;
-    private StringProperty userName;
-    private StringProperty pass;
-    private StringProperty schema;
-    private StringProperty service;
-    private List<Task> serverTasks;
+    private StringProperty serverName = new SimpleStringProperty();
+    private StringProperty ip = new SimpleStringProperty();
+    private IntegerProperty port = new SimpleIntegerProperty();
+    private StringProperty userName = new SimpleStringProperty();
+    private StringProperty pass = new SimpleStringProperty();
+    private StringProperty schema = new SimpleStringProperty();
+    private StringProperty service = new SimpleStringProperty();
+    private ObservableList<Task> serverTasks;
 
     public String getPass() {
         return pass.get();
@@ -28,10 +29,9 @@ public class Server {
     public void setPass(String pass) {
         this.pass.set(pass);
     }
-
-    public void setServerTasks(List<Task> serverTasks) {
-        this.serverTasks = serverTasks;
-    }
+    //public void setServerTasks(List<Task> serverTasks) {
+    //this.serverTasks = serverTasks;
+//    }
 
     public Server(String serverName, String ip, Integer port, String userName) {
         this.serverName.setValue(serverName);
@@ -40,7 +40,7 @@ public class Server {
         this.userName.setValue(userName);
         this.schema.setValue("DEFAULT");
         this.service.setValue("XE");
-        this.serverTasks = new ArrayList<>();
+        this.serverTasks = FXCollections.<Task>observableArrayList();
     }
 
     public String getServerName() {
@@ -136,7 +136,7 @@ public class Server {
         return result;
     }
 
-    public List<Task> getServerTasks() {
+    public ObservableList<Task> getServerTasks() {
         return serverTasks;
     }
 }
