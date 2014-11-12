@@ -15,7 +15,9 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.Duration;
 
 import java.net.URL;
@@ -31,7 +33,7 @@ public class NewTaskDialogController implements Initializable, ControlledScreen 
     private boolean isIncremental;
     private boolean isLogic;
     private Server server;
-    private Parent parentContainer;
+    private Window parentContainer;
     //CF,Init,Archive
     private boolean options[] = new boolean[3];
     int Level;
@@ -44,7 +46,7 @@ public class NewTaskDialogController implements Initializable, ControlledScreen 
     private HashMap<String, String> RegisteredScreens = new HashMap<>();
     private HashMap<String, ControlledScreen> controllers = new HashMap<>();
 
-    public NewTaskDialogController(Parent p, Server S) {
+    public NewTaskDialogController(Window parent, Server S) {
         content = new AnchorPane();
         RegisteredScreens.put("ConfirmNewTask", "/view/ConfirmNewTask/ConfirmNewTask.fxml");
         RegisteredScreens.put("NewTask", "/view/NewTaskView/AlertDialog_css.fxml");
@@ -63,6 +65,7 @@ public class NewTaskDialogController implements Initializable, ControlledScreen 
         isTotal = isIncremental = isPartial = isLogic = false;
         Level = 0;
         tableSpaceList = new ArrayList<>();
+        parentContainer = parent;
     }
 
     public int getScheduleType() {
@@ -173,6 +176,8 @@ public class NewTaskDialogController implements Initializable, ControlledScreen 
 
     public void Show() {
         //Block Owner http://stackoverflow.com/questions/15625987/block-owner-window-java-fx
+        stage.initModality(Modality.WINDOW_MODAL);
+        stage.initOwner(parentContainer);
         this.setScreen("1");
         stage.setScene(new Scene(this.content, 499, 195));
         stage.show();
@@ -362,11 +367,11 @@ public class NewTaskDialogController implements Initializable, ControlledScreen 
         this.parentController = parentController;
     }
 
-    public Parent getParentContainer() {
+    public Window getParentContainer() {
         return parentContainer;
     }
 
-    public void setParentContainer(Parent parentContainer) {
+    public void setParentContainer(Window parentContainer) {
         this.parentContainer = parentContainer;
     }
 
