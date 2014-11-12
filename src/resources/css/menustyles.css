@@ -1,0 +1,15 @@
+.Scene {
+
+}
+
+.blackborderpane {
+    -fx-border-color: transparent transparent lightblue transparent;
+    -fx-border-style: solid;
+    -fx-border-width: 1px;
+}
+
+.leftrpane {
+    -fx-border-color: transparent lightblue lightblue transparent;
+    -fx-border-style: solid;
+    -fx-border-width: 1px;
+}
