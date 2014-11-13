@@ -32,8 +32,6 @@ public class PSV_Controller implements Initializable, ControlledScreen {
     CheckBox PSV_CHK_ArchivedLogs;
     private Server s = MainViewController.actualServer();
 
-    PSV_Controller() {
-    }
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         s = MainViewController.actualServer();

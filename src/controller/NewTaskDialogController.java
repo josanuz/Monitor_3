@@ -2,6 +2,9 @@ package controller; /**
  * Created by Jose on 13/09/2014.
  */
 
+import accessobjects.ServerDAO;
+import accessobjects.TableSpaceDAO;
+import accessobjects.TaskDAO;
 import entities.Server;
 import entities.TableSpace;
 import entities.tasks.*;
@@ -15,12 +18,12 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
 
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.*;
 
 public class NewTaskDialogController implements Initializable, ControlledScreen {
@@ -66,6 +69,7 @@ public class NewTaskDialogController implements Initializable, ControlledScreen 
         Level = 0;
         tableSpaceList = new ArrayList<>();
         parentContainer = parent;
+        server = S;
     }
 
     public int getScheduleType() {
@@ -176,11 +180,11 @@ public class NewTaskDialogController implements Initializable, ControlledScreen 
 
     public void Show() {
         //Block Owner http://stackoverflow.com/questions/15625987/block-owner-window-java-fx
-        stage.initModality(Modality.WINDOW_MODAL);
-        stage.initOwner(parentContainer);
+        //stage.initModality(Modality.WINDOW_MODAL);
+        //stage.initOwner(parentContainer);
         this.setScreen("1");
         stage.setScene(new Scene(this.content, 499, 195));
-        stage.show();
+        stage.showAndWait();
     }
 
     //Add the screen to the collection
@@ -300,12 +304,14 @@ public class NewTaskDialogController implements Initializable, ControlledScreen 
                 lastLoaded = "3";
                 return;
             } else {
+                setSize("4");
                 lastLoaded = "4";
                 setScreen("4");
                 return;
             }
         }
         if (lastLoaded.equals("3")) {
+            setSize("4");
             lastLoaded = "4";
             setScreen("4");
             return;
@@ -348,6 +354,9 @@ public class NewTaskDialogController implements Initializable, ControlledScreen 
         } else if (s.equals("3")) {
             stage.setHeight(400);
             stage.setWidth(515);
+        } else if (s.equals("4")) {
+            stage.setHeight(300);
+            stage.setWidth(550);
         }
     }
 
@@ -399,7 +408,22 @@ public class NewTaskDialogController implements Initializable, ControlledScreen 
         if (isLogic) {
             newTask = new LogicalTask(this.scheduleType, this.startDate);
         }
+        //Platform.runLater(()->server.getServerTasks().add(newTask));
         server.getServerTasks().add(newTask);
+        try {
+            TaskDAO.instance().insert(newTask);
+            tableSpaceList.stream().forEach(t -> {
+                t.setTaskID(newTask.getTaskID());
+                try {
+                    TableSpaceDAO.instance().insert(t);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            });
+            ServerDAO.instance().assingTask(server, newTask);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
     /**Addedd coommet**/
 }

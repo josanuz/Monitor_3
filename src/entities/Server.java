@@ -136,6 +136,11 @@ public class Server {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return this.getServerName();
+    }
+
     public ObservableList<Task> getServerTasks() {
         return serverTasks;
     }

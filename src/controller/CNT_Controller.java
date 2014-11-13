@@ -35,6 +35,12 @@ public class CNT_Controller implements Initializable, ControlledScreen {
     @FXML
     void OK() {
         tvController.createTask();
+        tvController.close();
+    }
+
+    @FXML
+    void Back() {
+        tvController.previousScreen();
     }
 
     @FXML

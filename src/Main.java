@@ -1,7 +1,4 @@
-import accessobjects.TaskDAO;
 import connection.derby.DerbyConnection;
-import entities.tasks.CompleteTask;
-import entities.tasks.Task;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,7 +7,6 @@ import javafx.stage.Stage;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.Locale;
 
 public class Main extends Application {
@@ -41,9 +37,6 @@ public class Main extends Application {
             embed = DerbyConnection.instance();
             connection = embed.getConnection();
             firstTime();
-            Task t = new CompleteTask(Task.DIARY, new Date());
-            TaskDAO.instance().insert(t);
-            System.out.print(t.getTaskID());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -58,7 +51,7 @@ public class Main extends Application {
         } catch (SQLException e) {
             c = embed.getConnection();
             System.out.println("TABLES NOT FOUND CREATING REQUIERED TABLES");
-            c.createStatement().executeUpdate("CREATE TABLE TASKS(TaskID INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1) ,ScheduledType INT,Schedule VARCHAR(20),TypeID Int,TYPE VARCHAR(20),startDate TIMESTAMP,TLevel INTEGER, nextDate TIMESTAMP ,CONSTRAINT TASK_PK PRIMARY KEY (TaskID))");
+            c.createStatement().executeUpdate("CREATE TABLE TASKS(TaskID INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1) ,ScheduledType INT,Schedule VARCHAR(20),TypeID Int,TYPE VARCHAR(20),startDate TIMESTAMP, nextDate TIMESTAMP, TLevel INTEGER ,CONSTRAINT TASK_PK PRIMARY KEY (TaskID))");
             c.createStatement().executeUpdate("CREATE TABLE PARTIALTASKINCLUDES(TaskID INT, TablesSpace INT,INIT SMALLINT, DATAFILES SMALLINT, CONTROLFILE SMALLINT, ARCHIVELOGS SMALLINT,CONSTRAINT PTI_FK FOREIGN KEY (TaskID) REFERENCES TASKS)");
             c.createStatement().executeUpdate("CREATE TABLE TABLESPACE(TaskID INTEGER , TableSpaceName VARCHAR(128),CONSTRAINT TABLESPACE_PK PRIMARY KEY(TaskID,TableSpaceName),CONSTRAINT TABLESPACE_FK FOREIGN KEY (TaskID) REFERENCES TASKS)");
             c.createStatement().executeUpdate("CREATE TABLE DATAFILE(TaskID INTEGER , DataFileName VARCHAR(128),CONSTRAINT DATAFILE_PK PRIMARY KEY(DataFileName),CONSTRAINT DATAFILE_FK FOREIGN KEY (TaskID) REFERENCES TASKS)");

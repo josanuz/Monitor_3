@@ -60,11 +60,11 @@ public class SV_Controller implements Initializable, ControlledScreen {
 
     @FXML
     void OK() {
+        tvController.setScheduleType(SV_CB_ScheduleType.getSelectionModel().getSelectedIndex());
         LocalDate selectedDate = SV_DP_StartDate.getValue();
         LocalDateTime fStartDate = selectedDate.atTime(SV_CB_SHour.getValue(), SV_CB_SMin.getValue());
         Date daDate = Date.from(fStartDate.atZone(ZoneId.systemDefault()).toInstant());
         tvController.setStartDate(daDate);
-        tvController.setScheduleType(SV_CB_ScheduleType.getSelectionModel().getSelectedIndex());
         tvController.nextScreen();
     }
 

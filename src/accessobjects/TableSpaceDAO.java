@@ -20,6 +20,7 @@ public class TableSpaceDAO implements DAO<TableSpace, String> {
     private static TableSpaceDAO instance = null;
     private PreparedStatement getby;
     private PreparedStatement getAll;
+    private PreparedStatement insert;
     private PreparedStatement delete;
 
     public static TableSpaceDAO instance() throws SQLException {
@@ -31,6 +32,7 @@ public class TableSpaceDAO implements DAO<TableSpace, String> {
         c = DerbyConnection.instance().getConnection();
         getAll = c.prepareStatement("SELECT * FROM TABLESPACE");
         delete = c.prepareStatement("DELETE FROM TABLESPACE WHERE TASKID = ? AND TABLESPACENAME = ?");
+        insert = c.prepareStatement("INSERT INTO TABLESPACE(TASKID,TABLESPACENAME) VALUES(?,?)");
     }
 
     @Override
@@ -40,8 +42,9 @@ public class TableSpaceDAO implements DAO<TableSpace, String> {
 
     @Override
     public boolean insert(TableSpace what) throws SQLException {
-        //TODO HACER METODO INSERTAR
-        throw new UnsupportedOperationException();
+        insert.setInt(1, what.getTaskID());
+        insert.setString(2, what.getNombre());
+        return insert.executeUpdate() > 0;
     }
 
     @Override

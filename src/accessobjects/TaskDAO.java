@@ -61,12 +61,18 @@ public class TaskDAO implements DAO<Task, Integer> {
             next = r.getTimestamp("nextDate");
             level = r.getInt("TLevel");
             if (typeid == Task.PARTIAL) {
-                PartialTask p = new PartialTask(typeid, new Date(start.getTime()));
+                PartialTask p = new PartialTask(schty, new Date(start.getTime()));
                 final int pTskId = tskid;
                 List<TableSpace> taskTableSpaces = TableSpaceDAO.instance().select((TableSpace tbs) -> tbs.getTaskID() == pTskId);
                 p.setNextDate(new Date(next.getTime()));
                 p.getAffectedTablespaces().addAll(taskTableSpaces);
                 p.setTaskID(pk);
+                ResultSet rs = c.createStatement().executeQuery("SELECT CONTROLFILE,ARCHIVELOGS,INIT FROM PARTIALTASKINCLUDES WHERE TASKID = " + tskid);
+                while (rs.next()) {
+                    p.setIncludeControlFiles(rs.getInt("CONTROLFILE") > 0);
+                    p.setIncludeArchiveLogs(rs.getInt("ARCHIVELOGS") > 0);
+                    p.setIncludeInitFile(rs.getInt("INIT") > 0);
+                }
                 t = p;
                 //TODO add DataFiles to TBS
             } else if (typeid == Task.TOTAL) {
@@ -95,6 +101,18 @@ public class TaskDAO implements DAO<Task, Integer> {
         boolean result = insert.executeUpdate() >= 0;
         ResultSet rs = insert.getGeneratedKeys();
         while (rs.next()) what.setTaskID(rs.getInt(1));
+        if (what.getTypeID() == Task.PARTIAL) {
+            //TaskID INT, TablesSpace INT,INIT SMALLINT, DATAFILES SMALLINT, CONTROLFILE SMALLINT, ARCHIVELOGS SMALLINT
+            PreparedStatement p = c.prepareStatement("INSERT INTO PARTIALTASKINCLUDES VALUES(?,?,?,?,?,?)");
+            PartialTask w = (PartialTask) what;
+            p.setInt(1, what.getTaskID());
+            p.setInt(2, 1);
+            p.setInt(3, w.getIncludeInitFile() ? 1 : 0);
+            p.setInt(4, 0);
+            p.setInt(5, w.getIncludeControlFiles() ? 1 : 0);
+            p.setInt(6, w.getIncludeArchiveLogs() ? 1 : 0);
+            p.executeUpdate();
+        }
         return result;
     }
 
@@ -133,6 +151,10 @@ public class TaskDAO implements DAO<Task, Integer> {
     @Override
     public boolean delete(Task what) throws SQLException {
         delete.setInt(1, what.getTaskID());
+        c.createStatement().execute("DELETE FROM TABLESPACE WHERE TASKID = " + what.getTaskID());
+        c.createStatement().execute("DELETE FROM PARTIALTASKINCLUDES WHERE TASKID = " + what.getTaskID());
+        c.createStatement().execute("DELETE FROM SERVER_TASKS WHERE TASKID = " + what.getTaskID());
+        //c.createStatement().execute("DELETE FROM PARTIALTASKINCLUDES WHERE TASKID = " +what.getTaskID());
         return delete.executeUpdate() > 0;
     }
 

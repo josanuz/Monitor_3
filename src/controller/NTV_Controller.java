@@ -92,7 +92,7 @@ public class NTV_Controller implements Initializable, ControlledScreen {
                 taskViewController.setLogic(true);
                 break;
         }
-        Print.apply("Triying to go Next");
+        //taskViewController.setScheduleType(this.selectedType);
         taskViewController.nextScreen();
     }
 

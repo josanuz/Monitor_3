@@ -2,7 +2,6 @@ package accessobjects;
 
 import connection.derby.DerbyConnection;
 import entities.Server;
-import entities.TableSpace;
 import entities.tasks.Task;
 
 import java.sql.Connection;
@@ -54,7 +53,7 @@ public class ServerDAO implements DAO<Server, String> {
         while (rs.next()) {
             serverName = rs.getString("SERVERNAME");
             username = rs.getString("USERNAME");
-            pss = rs.getString("PPS");
+            pss = rs.getString("PSS");
             IP = rs.getString("IP");
             Port = rs.getInt("PORT");
             s = new Server(serverName, IP, Port, username);
@@ -85,9 +84,7 @@ public class ServerDAO implements DAO<Server, String> {
     public List<Server> getAll() throws SQLException {
         List<Server> servers = new ArrayList<>();
         ResultSet rs = getAll.executeQuery();
-        while (rs.next()) {
-            servers.add(getBy(rs.getString(rs.getString(1))));
-        }
+        while (rs.next()) servers.add(getBy(rs.getString(1)));
         return servers;
     }
 
@@ -113,14 +110,14 @@ public class ServerDAO implements DAO<Server, String> {
         deleteAll.execute();
     }
 
-    public boolean assingTableSpace(Server s, TableSpace t) throws SQLException {
+    public boolean assingTask(Server s, Task t) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("INSERT INTO SERVER_TASKS VALUES (?,?)");
         ps.setString(1, s.getServerName());
         ps.setInt(2, t.getTaskID());
         return ps.executeUpdate() >= 0;
     }
 
-    public boolean removeTableSpace(Server s, TableSpace t) throws SQLException {
+    public boolean removeTask(Server s, Task t) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("DELETE FROM SERVER_TASKS WHERE SERVER_NAME = ? AND TASKID = ?");
         ps.setString(1, s.getServerName());
         ps.setInt(2, t.getTaskID());
