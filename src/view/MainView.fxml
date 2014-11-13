@@ -82,6 +82,7 @@
                                         <MenuItem mnemonicParsing="false" onAction="#DeleteTask" text="Borrar"/>
                                         <MenuItem mnemonicParsing="false" text="Editar"/>
                                         <MenuItem mnemonicParsing="false" onAction="#new_Task" text="Nuevo"/>
+                                        <MenuItem mnemonicParsing="false" onAction="#executeTask" text="Ejecutar"/>
                                     </items>
                                 </ContextMenu>
                             </contextMenu>

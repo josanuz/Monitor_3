@@ -82,6 +82,15 @@ public abstract class Task {
         return new Date(c1.getTimeInMillis());
     }
 
+    public void ExectuteTime() {
+        try {
+            this.nextDate = next();
+            this.setNext(dateTimeFormatter.format(nextDate));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
     public int getLevel() {
         return level;
     }

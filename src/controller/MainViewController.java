@@ -2,6 +2,7 @@ package controller;
 
 import accessobjects.ServerDAO;
 import accessobjects.TaskDAO;
+import entities.MessageWriter;
 import entities.NSV;
 import entities.Server;
 import entities.TableSpace;
@@ -15,9 +16,13 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Casa on 12/11/2014.
@@ -75,12 +80,13 @@ public class MainViewController implements Initializable {
     private
     @FXML
     ListView<TableSpace> MV_LV_TIncludedTBS;
+    public static ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
-    static {
+    /*static {
         actualSelectedServer = new Server("Oracle", "192.168.1.111", 1521, "SYS as sysdba");
         actualSelectedServer.setService("XE");
         actualSelectedServer.setPass("root");
-    }
+    }*/
     public static Server actualServer() {
         return actualSelectedServer;
     }
@@ -107,6 +113,7 @@ public class MainViewController implements Initializable {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        if (MV_CHC_CF.getScene() == null) System.out.println("YAY!");
     }
 
     private void infoPane(Task n) {
@@ -141,7 +148,27 @@ public class MainViewController implements Initializable {
             MV_CHK_AL.setVisible(false);
             MV_CHK_IF.setVisible(false);
         }
+        executorService.scheduleAtFixedRate(checker, 1, 1, TimeUnit.HOURS);
     }
+
+    Runnable checker = () -> {
+        System.err.print("Running like a boss");
+        try {
+            for (Server s : ServerDAO.instance().getAll()) {
+                MessageWriter ms = MessageWriter.instance(s);
+                for (Task t : s.getServerTasks()) {
+                    if (Math.abs(t.getNextDate().getTime() - System.currentTimeMillis()) < 60000) {
+                        t.ExectuteTime();
+                        ms.WriteMessage(t.toXML());
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    };
 
     @FXML
     private void new_Task() {
@@ -165,6 +192,7 @@ public class MainViewController implements Initializable {
     void newServer() {
         NSV nsv = new NSV();
         Server s = nsv.show();
+        if (s.getServerName().trim() == "") return;
         try {
             ServerDAO.instance().insert(s);
             this.MV_LV_Servers.getItems().setAll(ServerDAO.instance().getAll());
@@ -185,4 +213,19 @@ public class MainViewController implements Initializable {
             MV_TV_Tasks.getItems().setAll(ServerDAO.instance().getBy(actualSelectedServer.getServerName()).getServerTasks());
         }
     }
+
+    @FXML
+    void executeTask() {
+        Task t = MV_TV_Tasks.getSelectionModel().getSelectedItem();
+        if (t != null) {
+            try {
+                MessageWriter messageWriter = MessageWriter.instance(actualSelectedServer);
+                messageWriter.WriteMessage(t.toXML());
+                t.ExectuteTime();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
+

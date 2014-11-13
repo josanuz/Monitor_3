@@ -22,7 +22,6 @@ public class IncrementalTask extends Task {
 
     @Override
     public String toXML() {
-        //TODO DEFINIR XML
-        return "";
+        return "Incremental " + this.level;
     }
 }

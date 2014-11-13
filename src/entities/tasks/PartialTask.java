@@ -74,8 +74,10 @@ public class PartialTask extends Task {
 
     @Override
     public String toXML() {
-        //TODO Definir el XML
-        return "";
+        String s = "Partial " + this.getIncludeControlFiles() + " " + this.getIncludeInitFile() + " " + this.includeArchiveLogs;
+        for (TableSpace t : this.affectedTablespaces)
+            s += " " + t.getNombre();
+        return s;
     }
 
     public List<DataFile> getAffectedDataFiles() {

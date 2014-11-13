@@ -1,4 +1,5 @@
 import connection.derby.DerbyConnection;
+import controller.MainViewController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -8,6 +9,7 @@ import javafx.stage.Stage;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 public class Main extends Application {
     private static DerbyConnection embed;
@@ -24,7 +26,12 @@ public class Main extends Application {
         primaryStage.setOnCloseRequest((e) -> {
             try {
                 embed.close();
+                MainViewController.executorService.shutdownNow();
+                MainViewController.executorService.shutdown();
+                MainViewController.executorService.awaitTermination(100, TimeUnit.MILLISECONDS);
             } catch (SQLException e1) {
+                e1.printStackTrace();
+            } catch (InterruptedException e1) {
                 e1.printStackTrace();
             }
         });
