@@ -13,7 +13,7 @@ public class MessageWriter {
     Socket informer;
     DataInputStream is;
     DataOutputStream os;
-    private static HashMap<String, MessageWriter> writers;
+    private static HashMap<String, MessageWriter> writers = new HashMap<>();
 
     public static MessageWriter instance(Server s) throws IOException {
         if (writers.get(s.getServerName()) == null) writers.put(s.getServerName(), new MessageWriter(s));
@@ -26,6 +26,13 @@ public class MessageWriter {
         os = new DataOutputStream(informer.getOutputStream());
     }
 
+    public void close() {
+        try {
+            informer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     public void WriteMessage(String Message) throws IOException {
         os.writeUTF(Message);
     }

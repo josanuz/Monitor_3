@@ -74,7 +74,10 @@ public abstract class Task {
         Calendar c1 = Calendar.getInstance();
         Date last;
         if (this.nextDate != null) last = nextDate;
-        else last = start_Date;
+        else {
+            last = start_Date;
+            return last;
+        }
         c1.setTime(last);
         if (getScheduledTypeID() == Task.DIARY) c1.add(Calendar.DATE, 1);
         else if (getScheduledTypeID() == Task.WEEKLY) c1.add(Calendar.DATE, 7);

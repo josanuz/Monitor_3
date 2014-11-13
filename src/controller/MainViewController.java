@@ -6,8 +6,10 @@ import entities.MessageWriter;
 import entities.NSV;
 import entities.Server;
 import entities.TableSpace;
+import entities.tasks.IncrementalTask;
 import entities.tasks.PartialTask;
 import entities.tasks.Task;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -114,6 +116,8 @@ public class MainViewController implements Initializable {
             e.printStackTrace();
         }
         if (MV_CHC_CF.getScene() == null) System.out.println("YAY!");
+        executorService.scheduleAtFixedRate(checker, 30, 30, TimeUnit.SECONDS);
+
     }
 
     private void infoPane(Task n) {
@@ -139,7 +143,7 @@ public class MainViewController implements Initializable {
             MV_LV_TIncludedTBS.getItems().setAll(ptemp.getAffectedTablespaces());
         }
         if (n.getTypeID() == Task.INCREMENTAL) {
-            PartialTask ptemp = (PartialTask) n;
+            IncrementalTask ptemp = (IncrementalTask) n;
             MV_LBL_TLevel.setVisible(true);
             MV_LBL_TLevel.setText("" + n.getLevel());
             MV_LBL_STLevel.setVisible(true);
@@ -148,7 +152,11 @@ public class MainViewController implements Initializable {
             MV_CHK_AL.setVisible(false);
             MV_CHK_IF.setVisible(false);
         }
-        executorService.scheduleAtFixedRate(checker, 1, 1, TimeUnit.HOURS);
+        try {
+            MV_CHC_CF.getScene().getWindow().setOnCloseRequest(closing);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     Runnable checker = () -> {
@@ -160,6 +168,14 @@ public class MainViewController implements Initializable {
                     if (Math.abs(t.getNextDate().getTime() - System.currentTimeMillis()) < 60000) {
                         t.ExectuteTime();
                         ms.WriteMessage(t.toXML());
+                        TaskDAO.instance().update(t);
+                        Platform.runLater(() -> {
+                            try {
+                                MV_TV_Tasks.getItems().setAll(ServerDAO.instance().getBy(actualSelectedServer.getServerName()).getServerTasks());
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        });
                     }
                 }
             }
@@ -221,11 +237,24 @@ public class MainViewController implements Initializable {
             try {
                 MessageWriter messageWriter = MessageWriter.instance(actualSelectedServer);
                 messageWriter.WriteMessage(t.toXML());
-                t.ExectuteTime();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
+
+    javafx.event.EventHandler<javafx.stage.WindowEvent> closing = (e) -> {
+        try {
+            for (Server s : ServerDAO.instance().getAll()) {
+                MessageWriter ms = MessageWriter.instance(s);
+                for (Task t : s.getServerTasks())
+                    ms.WriteMessage("exit");
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    };
 }
 

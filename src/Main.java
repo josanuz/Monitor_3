@@ -1,6 +1,7 @@
 import connection.derby.DerbyConnection;
 import controller.MainViewController;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -29,6 +30,7 @@ public class Main extends Application {
                 MainViewController.executorService.shutdownNow();
                 MainViewController.executorService.shutdown();
                 MainViewController.executorService.awaitTermination(100, TimeUnit.MILLISECONDS);
+                Platform.exit();
             } catch (SQLException e1) {
                 e1.printStackTrace();
             } catch (InterruptedException e1) {

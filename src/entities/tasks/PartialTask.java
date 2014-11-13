@@ -74,7 +74,7 @@ public class PartialTask extends Task {
 
     @Override
     public String toXML() {
-        String s = "Partial " + this.getIncludeControlFiles() + " " + this.getIncludeInitFile() + " " + this.includeArchiveLogs;
+        String s = "partial " + this.getIncludeControlFiles() + " " + this.getIncludeInitFile() + " " + this.getIncludeArchiveLogs();
         for (TableSpace t : this.affectedTablespaces)
             s += " " + t.getNombre();
         return s;

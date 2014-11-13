@@ -12,6 +12,6 @@ public class CompleteTask extends Task {
 
     @Override
     public String toXML() {
-        return "Full";
+        return "full";
     }
 }

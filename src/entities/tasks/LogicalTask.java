@@ -12,6 +12,6 @@ public class LogicalTask extends Task {
 
     @Override
     public String toXML() {
-        return "Logical";
+        return "logical";
     }
 }
